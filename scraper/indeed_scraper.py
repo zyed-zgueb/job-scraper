@@ -108,9 +108,35 @@ class IndeedScraper(BaseScraper):
 
             soup = self.parse_html(response.text)
 
+            # DEBUG: Sauvegarder le HTML pour analyse
+            debug_file = f"/tmp/indeed_debug_{keyword.replace(' ', '_')}.html"
+            try:
+                with open(debug_file, 'w', encoding='utf-8') as f:
+                    f.write(response.text)
+                logger.debug(f"HTML sauvegardé dans {debug_file}")
+            except Exception as e:
+                logger.debug(f"Impossible de sauvegarder le HTML: {e}")
+
             # Indeed utilise des cards pour chaque offre
-            # Structure HTML peut varier, adapter selon la version du site
+            # Essayer plusieurs sélecteurs possibles
             job_cards = soup.find_all('div', class_='job_seen_beacon')
+            logger.debug(f"Trouvé {len(job_cards)} cartes avec class='job_seen_beacon'")
+
+            if len(job_cards) == 0:
+                # Essayer d'autres sélecteurs
+                job_cards = soup.find_all('div', class_='jobsearch-SerpJobCard')
+                logger.debug(f"Trouvé {len(job_cards)} cartes avec class='jobsearch-SerpJobCard'")
+
+            if len(job_cards) == 0:
+                job_cards = soup.find_all('a', class_='jcs-JobTitle')
+                logger.debug(f"Trouvé {len(job_cards)} liens avec class='jcs-JobTitle'")
+
+            if len(job_cards) == 0:
+                # Chercher tous les divs et compter combien contiennent "job" dans leur classe
+                all_divs_with_job = soup.find_all('div', class_=lambda x: x and 'job' in x.lower())
+                logger.debug(f"Trouvé {len(all_divs_with_job)} divs avec 'job' dans la classe")
+                if len(all_divs_with_job) > 0:
+                    logger.debug(f"Exemples de classes: {[d.get('class') for d in all_divs_with_job[:3]]}")
 
             for card in job_cards:
                 try:

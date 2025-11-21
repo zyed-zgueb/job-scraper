@@ -4,6 +4,7 @@ Configuration du logging
 
 import logging
 import sys
+import os
 from datetime import datetime
 
 
@@ -23,7 +24,9 @@ def setup_logger(name: str) -> logging.Logger:
     if logger.handlers:
         return logger
 
-    logger.setLevel(logging.INFO)
+    # Utiliser DEBUG si la variable d'environnement DEBUG est définie
+    log_level = logging.DEBUG if os.getenv('DEBUG', '').lower() in ('true', '1', 'yes') else logging.INFO
+    logger.setLevel(log_level)
 
     # Format
     formatter = logging.Formatter(
@@ -33,7 +36,7 @@ def setup_logger(name: str) -> logging.Logger:
 
     # Handler console
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
+    console_handler.setLevel(log_level)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
