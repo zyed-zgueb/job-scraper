@@ -267,11 +267,16 @@ Le script crée automatiquement les colonnes suivantes:
 
 ### Erreur de compatibilité des dépendances
 
-Si vous rencontrez l'erreur `AttributeError: module 'torch.utils._pytree' has no attribute 'register_pytree_node'` ou des conflits de dépendances avec torch/torchvision:
+Si vous rencontrez des erreurs comme:
+- `AttributeError: module 'torch.utils._pytree' has no attribute 'register_pytree_node'`
+- `Failed to initialize NumPy: _ARRAY_API not found`
+- Conflits de dépendances avec torch/torchvision/numpy
+
+**Solution complète:**
 
 1. Désinstaller toutes les anciennes dépendances ML:
 ```bash
-pip uninstall torch torchvision transformers sentence-transformers -y
+pip uninstall torch torchvision transformers sentence-transformers numpy -y
 ```
 
 2. Réinstaller avec les versions compatibles:
@@ -280,7 +285,10 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Les versions ont été fixées pour assurer la compatibilité entre PyTorch (2.1.2) et Transformers (>=4.35.0).
+**Versions fixées pour compatibilité:**
+- PyTorch: 2.1.2
+- Transformers: ≥4.35.0
+- NumPy: ≥1.21.0, <2.0.0 (PyTorch 2.1.2 n'est pas compatible avec NumPy 2.x)
 
 ### Erreur d'authentification Google Sheets
 
