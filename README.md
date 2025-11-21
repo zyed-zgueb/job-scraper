@@ -265,6 +265,23 @@ Le script crée automatiquement les colonnes suivantes:
 
 ## 🐛 Dépannage
 
+### Erreur de compatibilité des dépendances
+
+Si vous rencontrez l'erreur `AttributeError: module 'torch.utils._pytree' has no attribute 'register_pytree_node'`:
+
+1. Désinstaller les anciennes dépendances:
+```bash
+pip uninstall torch transformers sentence-transformers -y
+```
+
+2. Réinstaller avec les versions compatibles:
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Les versions ont été mises à jour pour assurer la compatibilité entre PyTorch et Transformers.
+
 ### Erreur d'authentification Google Sheets
 
 - Vérifier que le fichier `creds.json` existe
