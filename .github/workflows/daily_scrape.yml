@@ -1,0 +1,70 @@
+name: Daily Job Scraper
+
+on:
+  schedule:
+    # Exécution quotidienne à 8h00 UTC (9h00 Paris en hiver, 10h00 en été)
+    - cron: '0 8 * * *'
+  workflow_dispatch:  # Permet de déclencher manuellement
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create credentials and .env
+        env:
+          GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDS }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_RECIPIENT: ${{ secrets.SMTP_RECIPIENT }}
+          MIN_SALARY: ${{ secrets.MIN_SALARY }}
+          ML_SCORE_THRESHOLD: ${{ secrets.ML_SCORE_THRESHOLD }}
+        run: |
+          # Créer le fichier creds.json depuis le secret
+          echo "$GOOGLE_CREDS" > creds.json
+
+          # Créer le fichier .env
+          cat > .env << EOF
+          GOOGLE_SHEET_ID=$GOOGLE_SHEET_ID
+          GOOGLE_CREDS_JSON=./creds.json
+          SMTP_EMAIL=$SMTP_EMAIL
+          SMTP_PASSWORD=$SMTP_PASSWORD
+          SMTP_RECIPIENT=$SMTP_RECIPIENT
+          MIN_SALARY=${MIN_SALARY:-50000}
+          LOCATIONS=Nancy,Metz,Épinal,remote
+          ML_SCORE_THRESHOLD=${ML_SCORE_THRESHOLD:-65}
+          MAX_REMOTE_DISTANCE_KM=100
+          DRY_RUN=false
+          DEBUG=false
+          EOF
+
+      - name: Run job scraper
+        run: |
+          python main.py
+
+      - name: Cleanup sensitive files
+        if: always()
+        run: |
+          rm -f creds.json .env
