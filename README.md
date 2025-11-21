@@ -307,6 +307,15 @@ pip install -r requirements.txt
 - La structure HTML des sites peut avoir changé
 - Vérifier les logs pour plus de détails
 
+### Erreur 403 Forbidden ou blocage Cloudflare
+
+Indeed et d'autres sites utilisent Cloudflare pour bloquer les bots. Le projet utilise `cloudscraper` pour contourner ces protections :
+
+- Assurez-vous que `cloudscraper` est installé : `pip install cloudscraper`
+- Le scraper ajoute automatiquement des headers HTTP réalistes
+- Des délais aléatoires (2-5s) sont ajoutés entre les requêtes
+- Si le blocage persiste, envisagez d'utiliser Selenium avec un vrai navigateur
+
 ## 📝 TODO / Améliorations futures
 
 - [ ] Support de LinkedIn

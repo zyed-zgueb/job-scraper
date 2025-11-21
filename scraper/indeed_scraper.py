@@ -5,6 +5,8 @@ Peut utiliser l'API RapidAPI ou du web scraping direct
 
 from typing import List, Dict
 from datetime import datetime
+import time
+import random
 from .base_scraper import BaseScraper
 from utils.logger import setup_logger
 
@@ -55,11 +57,17 @@ class IndeedScraper(BaseScraper):
             "Senior Developer"
         ]
 
-        for keyword in keywords:
+        for i, keyword in enumerate(keywords):
             logger.info(f"  Recherche: {keyword}")
             jobs_for_keyword = self._search_jobs(keyword)
             jobs.extend(jobs_for_keyword)
             logger.info(f"  Trouvé: {len(jobs_for_keyword)} offres")
+
+            # Délai entre les requêtes pour éviter d'être bloqué (sauf pour la dernière)
+            if i < len(keywords) - 1:
+                delay = random.uniform(2, 5)
+                logger.debug(f"  Attente de {delay:.1f}s avant la prochaine recherche...")
+                time.sleep(delay)
 
         # Dédupliquer par URL
         unique_jobs = self._deduplicate_jobs(jobs)

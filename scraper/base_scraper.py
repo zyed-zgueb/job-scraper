@@ -10,6 +10,12 @@ import requests
 from bs4 import BeautifulSoup
 from utils.logger import setup_logger
 
+try:
+    import cloudscraper
+    CLOUDSCRAPER_AVAILABLE = True
+except ImportError:
+    CLOUDSCRAPER_AVAILABLE = False
+
 logger = setup_logger(__name__)
 
 
@@ -26,7 +32,19 @@ class BaseScraper(ABC):
 
     def __init__(self, config):
         self.config = config
-        self.session = requests.Session()
+        # Utiliser cloudscraper pour contourner Cloudflare si disponible
+        if CLOUDSCRAPER_AVAILABLE:
+            self.session = cloudscraper.create_scraper(
+                browser={
+                    'browser': 'chrome',
+                    'platform': 'windows',
+                    'desktop': True
+                }
+            )
+            logger.info("Cloudscraper activé pour contourner Cloudflare")
+        else:
+            self.session = requests.Session()
+            logger.warning("Cloudscraper non disponible, utilisation de requests standard")
 
     def get_random_user_agent(self) -> str:
         """Retourne un User-Agent aléatoire"""
@@ -47,9 +65,19 @@ class BaseScraper(ABC):
         max_retries = 3
         backoff_factor = 2
 
+        # Headers complets pour paraître plus légitime
         headers = kwargs.get('headers', {})
         if 'User-Agent' not in headers:
             headers['User-Agent'] = self.get_random_user_agent()
+
+        # Ajouter des headers réalistes si absents
+        headers.setdefault('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8')
+        headers.setdefault('Accept-Language', 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7')
+        headers.setdefault('Accept-Encoding', 'gzip, deflate, br')
+        headers.setdefault('DNT', '1')
+        headers.setdefault('Connection', 'keep-alive')
+        headers.setdefault('Upgrade-Insecure-Requests', '1')
+
         kwargs['headers'] = headers
 
         for attempt in range(max_retries):
