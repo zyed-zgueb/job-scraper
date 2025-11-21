@@ -44,7 +44,7 @@ GitHub Actions: cron job 1x/day (ex: 9h du matin)
 
 **HelloWork** :
 - Web scraping avec `BeautifulSoup` + optionnellement `Selenium`
-- URL base : `https://www.hellowork.com/fr-fr/emplois/recherche.html`
+- URL base : `https://www.hellowork.com/fr-fr/emploi/recherche.html`
 - Query params : keywords + location (Nancy, Metz, Épinal)
 - Extraire : title, company, location, salary, job_url, description, date_posted
 

@@ -15,7 +15,7 @@ class HelloWorkScraper(BaseScraper):
     """Scraper pour le site HelloWork"""
 
     BASE_URL = "https://www.hellowork.com"
-    SEARCH_URL = f"{BASE_URL}/fr-fr/emplois/recherche.html"
+    SEARCH_URL = f"{BASE_URL}/fr-fr/emploi/recherche.html"
 
     def scrape(self) -> List[Dict]:
         """

@@ -54,7 +54,8 @@ class IndeedScraper(BaseScraper):
             "Engineering Manager",
             "Tech Lead",
             "Product Manager",
-            "Senior Developer"
+            "Senior Developer",
+            "Chef de projet"
         ]
 
         for i, keyword in enumerate(keywords):
