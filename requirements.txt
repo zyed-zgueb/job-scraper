@@ -1,6 +1,6 @@
 # Core dependencies
 sentence-transformers>=2.2.2
-transformers>=4.35.0
+transformers==4.37.2
 torch==2.1.2
 huggingface-hub>=0.11.0
 

@@ -287,7 +287,7 @@ pip install -r requirements.txt
 
 **Versions fixées pour compatibilité:**
 - PyTorch: 2.1.2
-- Transformers: ≥4.35.0
+- Transformers: 4.37.2 (les versions plus récentes nécessitent PyTorch 2.2+)
 - NumPy: ≥1.21.0, <2.0.0 (PyTorch 2.1.2 n'est pas compatible avec NumPy 2.x)
 
 ### Erreur d'authentification Google Sheets
